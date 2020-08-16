@@ -1,0 +1,138 @@
+---
+title: "R Notebook"
+output: rmarkdown::github_document
+---
+
+## Problema 1 
+  * Crear mi propia función, que me lea los diferentes archivos de excel, para despues seleccionar las columnas de interes, luego agregar la columna de fecha para identificar el de donde vienen las filas. Para finalizar con la unificación de los diferentes archivos en un solo excel. 
+  
+# Codigo 
+```{r}
+library(readxl)
+data <- read_excel("01-2018.xlsx")
+archivos <- list.files()[-12] 
+df <- lapply(archivos, read_excel)
+
+
+archivos[1]
+
+# Crear Nueva función 
+library(data.table)
+leer_archivos <- function(file){
+  df <- read_excel(file)
+  df <- df[,1:8]
+  print(file)
+  df$fecha <- substr(file,1,nchar(file)-5) 
+  
+    
+  return(df)
+}
+
+```
+# Explicación del codigo 
+  * Primero cargamos la librería "readxl" que sirve para correr comandos que me ayudan a leer archivos en excel. 
+  * Despues cree dos variables, Archivos y df, archivos para que me listara los exceles (1-11) y df para correr un lapply para que me leyera todos los exceles con la función read_excel
+  * Despues empece con la creación de la función a la cual nombre leer_archivos, esta va aplicada a file. Luego le pedi que leyera el archivo, seguido de que me seleccionara las primeras 8 columnas que son las solicitads. Para seguir agrege la nueva columna con la función substr, con el nombre del file y agregue la función nchar para que me quitara los carcateres ".xlxs" 
+  * Luego le pedi que lo retornara como un Data frame 
+  
+# Unificación y creación del excel
+```{r}
+leer_archivos(file = archivos[1])
+
+Newdfs <- lapply(archivos, leer_archivos)
+
+mixdfs <- rbindlist(Newdfs)
+
+mixdfs
+
+library(readr)
+library(readxl)
+
+write_excel_csv2(mixdfs, "Lab-1Mix.xls", delim = ",")
+```
+  * Con esta parte del codigo probe mi función para el data frame 1, que es el primer archivo en la carpeta 
+  * Como vimos que si funciona, cree una nueva variable la cual me va listar los nuevos data frames con la función aplicada usando lapply 
+  * Ya con eso cree una nueva variable la cual unificara los Data frames en uno solo con una función que contiene la libreria data.table que se llama rbindlist() que fuciona data frames en rows que se encuentren en una lista. 
+  * Ya con esta nueva variable creada, cargamos las librerias readr y readxl para usar nuestro comando write_excel_cvs2 para exportar nuestros datos a un excel. 
+  
+# Problema 2 
+  * El problema numero dos nos pide que creemos una lista de vectores y calculemos la moda aplicando un lapply 
+```{r}
+vec1 <- sample(x= 1:10, size = 10, replace = TRUE)
+vec2 <- sample(x= 1:10, size = 10, replace = TRUE)
+vec3 <- sample(x= 1:10, size = 10, replace = TRUE)
+
+Lista_vectores <- list(vec1, vec2, vec3)
+Lista_vectores
+```
+  * En este codigo cree tres vectores aleatorios de tamaño 10 y que saque numeros aleatorios del 1-10. 
+  * Despues agregue la variable lista_vectores y los identifique como una lista de los 3 vectores creados 
+  
+```{r}
+install.packages("modeest")
+moda <- function(x){
+  library(modeest)
+  mfv(x)
+}
+
+lapply(Lista_vectores, moda)
+```
+  * Existe una libreria llamada modeest que contiene una función para aplicar la moda a un vector, por lo cual instale la libreria modeest. 
+  * Dentro de la nueva función que se llama moda, agregue que cargue la libreria modest y que aplicara la moda a x. 
+  * Con nuestro modelo funcionando aplique un lapply a la lista de vectores que cree y que use la función moda 
+ * Este fue el resultado: 
+```{r}
+ Lista_vectores
+[[1]]
+ [1]  2 10  4  9  5  9  8  1  3  9
+
+[[2]]
+ [1]  1  6 10  3  9 10  4  1  6  6
+
+[[3]]
+ [1] 9 9 5 5 1 8 7 8 6 5
+
+lapply(Lista_vectores, moda)
+[[1]]
+[1] 9
+
+[[2]]
+[1] 6
+
+[[3]]
+[1] 5
+```
+ 
+# Problema 3 
+ * El problema 3 nos pide que leeamos el archivo del parque vehicular más reciente
+ * Primero descargue el INE_PARQUE_VEHICULAR_080720.txt que es la data más reciente sobre el parque vehicular 
+ 
+```{r}
+library(readr)
+library(readxl)
+
+txt_1 <- read_delim("INE_PARQUE_VEHICULAR_080720.txt", delim = "|")
+```
+ * Para poder leerlo cargue las librerias readr y readxl que sirven para usar la función read_delim 
+ * delim es el delimitador, por lo cual vi en la data y identifique "|" como el delimitador, por lo cual al crear mi variable txt_1 con un read_delim le especifique que mi delimitador era "|"
+ 
+```{r}
+txt_1
+```
+ * Al correr la variable que creamos nos debe permitir leer el archivo, por lo cual este fue el resultado 
+
+```{r}
+ *   <dbl> <chr> <chr>            <chr>            <chr>           <chr>         
+ 1      2007 05    EL PROGRESO      "EL JICARO"      2007            BT-50 DBL
+```
+ * Tiene muchos más datos pero por motivo de ejemplo solo use el primero 
+ 
+
+
+
+
+  
+  * https://stackoverflow.com/questions/39814916/how-can-i-see-output-of-rmd-in-github
+
+ 
+
